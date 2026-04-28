@@ -14,9 +14,13 @@ typedef struct Nodo{
 } Nodo; 
 
 void limpiarBuffer();
+Nodo * crearListaVacia();
+Nodo * crearNodo(int id, int duracion, char Descripcion);
+void ingresarTarea();
 
 int main()
 {
+    Nodo * start = crearListaVacia();
     Tarea nuevaTarea;
     char buffer[100];
     int opcion = 0;
@@ -49,9 +53,8 @@ int main()
             condicion = 1;
         }else
             condicion = 0;
-        
 
-   } while (condicion == 1);
+    } while (condicion == 1);
     
     
 
@@ -66,4 +69,17 @@ int main()
 void limpiarBuffer(){
     int c;
     while((c=getchar())!= '\n' && c!=EOF){}
+}
+
+Nodo * crearListaVacia(){
+    return NULL;
+}
+
+Nodo * crearNodo(int id, int duracion, char Descripcion){
+    Nodo * nodo = (Nodo *)malloc(sizeof(Nodo));
+    nodo->T.TareaID = id;
+    nodo->T.Duracion = duracion;
+    nodo->T.Descripcion = Descripcion;
+
+    return nodo;
 }
