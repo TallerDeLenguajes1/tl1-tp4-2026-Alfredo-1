@@ -66,9 +66,8 @@ int main()
     return 0;
 }
 
-void limpiarBuffer(){
-    int c;
-    while((c=getchar())!= '\n' && c!=EOF){}
+void InsertarNodo(Nodo ** Start, Nodo *Nodo){
+    Nodo->Siguiente = *Start;
 }
 
 Nodo * crearListaVacia(){
