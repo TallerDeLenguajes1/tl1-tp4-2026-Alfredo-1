@@ -23,6 +23,9 @@ Nodo * buscarNodo(Nodo ** Start, int ID);
 void mostrarLista(Nodo * Start);
 Nodo * quitarNodo(Nodo ** Start, int ID);
 Nodo * eliminarNodo(Nodo * nodo);
+Nodo * buscarNodoEnDosListas(Nodo ** Start);
+void mostrarNodo(Nodo * nodo);
+void liberarMemoriaDeLista(Nodo ** Start);
 
 int main()
 {
@@ -34,7 +37,8 @@ int main()
     int condicion = 0;
     int opcion = 0;
     int id = 999;
-
+    char buffer[50];
+    char * tareaBuscada;
     do
     {
         id++;
@@ -86,12 +90,33 @@ int main()
         else
             condicion = 0;
 
-    } while (condicion == 1);//dejara de iterar cuando condicion = 1
+    } while (condicion == 1);
     
-    printf("\n\n---------------Las tareas a realizar son------------");
+    printf("\n\n---------------Las tareas pendientes son------------");
     mostrarLista(start);
     printf("\n\n---------------Las tareas realizadas son------------");
     mostrarLista(start2);
+
+    //buscara la tarea en la lista 1, si no la encuentra buscada en lista 2
+    //si tampoco la encuentra mostrara un mensaje diciendo que no encontro la tarea.
+    Nodo *nodobuscado = buscarNodoEnDosListas(&start);
+    if (nodobuscado != NULL)
+    {
+        printf("\n\n---------------Tarea pendiente------------");
+        mostrarNodo(nodobuscado);
+    }else{
+        nodobuscado = buscarNodoEnDosListas(&start2);
+        if (nodobuscado != NULL)
+        {
+            printf("\n\n---------------Tarea realizada------------");
+            mostrarNodo(nodobuscado);
+        }else
+            printf("\nNo se encontro la tarea buscada");
+    }
+    
+    liberarMemoriaDeLista(&start);
+    liberarMemoriaDeLista(&start2);
+
     return 0;
 }
 
@@ -143,23 +168,26 @@ void insertarNodo(Nodo ** Start, Nodo * nuevoNodo){
     *Start = nuevoNodo;
 }
 
+void mostrarNodo(Nodo * nodo){
+    if (nodo != NULL)
+    {
+        printf("\n\nID Tarea: %d", nodo->T.TareaID);
+        printf("\nDescripcion de tarea: %s", nodo->T.Descripcion);
+        printf("\nDuracion de tarea: %d horas", nodo->T.Duracion);
+    }
+    
+    
+}
+
 void mostrarLista(Nodo * Start){//no hace falta pasarle con doble puntero por que no se cambiara ningun dato
     Nodo * Aux = Start;
      while (Aux)//muestra hasta llegar a NULL
     {
-        printf("\n\nID Tarea: %d", Aux->T.TareaID);
-        printf("\nDescripcion de tarea: %s", Aux->T.Descripcion);
-        printf("\nDuracion de tarea: %d horas", Aux->T.Duracion);
-        
+        mostrarNodo(Aux);
         Aux = Aux->Siguiente;
     }
 }
 
-/*en esta funcion quiero que pida como parametro la direccion del puntero a Start y el numero id
-de la tarea que quiero transferir a la lista de tareas finalizadas
-cambiar Tarea por id que recibe como parametro
-usar ese id para comparar con cada nodo de la lista hasta encontrarlo
-si no lo encuentra retorna Aux = NULL*/
 Nodo * buscarNodo(Nodo ** Start, int ID){
     Nodo * Aux = * Start;
     //recorrera la lista hasta que aux llegue a null, o hasta que encuentre la tarea con el id buscado
@@ -191,4 +219,70 @@ Nodo * quitarNodo(Nodo ** Start, int ID){
 
 Nodo * eliminarNodo(Nodo * nodo){
     free(nodo);
+}
+
+Nodo * buscarNodoEnDosListas(Nodo ** Start){
+    Nodo * Aux = * Start;
+    int eleccion;
+    int ID=0;
+    char buffer [50];
+    char * descripcion;
+
+    printf("\nFormas disponibles para buscar una tarea\n");
+    printf("\n1. ID\n2. Descripcion\n");
+    do
+    {
+        printf("\nIngrese su eleccion: ");
+        scanf("%i", &eleccion);
+        limpiarBuffer();
+    } while (eleccion != 1 && eleccion != 2);
+    
+    if(eleccion == 1){
+        printf("\n\nID Tarea: ");
+        scanf("%d",&ID);
+        limpiarBuffer();
+    }else{
+        printf("\n\nDescripcion Tarea: ");
+        fgets(buffer, sizeof(buffer),stdin);
+        buffer[strcspn(buffer, "\n")] = '\0';
+        descripcion = (char *)malloc((strlen(buffer)+1)*sizeof(char));
+        strcpy(descripcion, buffer);
+    }
+
+    //recorrera la lista hasta que aux llegue a null, o hasta que encuentre la tarea buscada
+    while (Aux )
+    {   //verifico si coincide el id
+        if (Aux->T.TareaID == ID){
+            free(descripcion);//libero la memoria ocupada antes de retornar
+            return Aux;
+        }
+            
+        
+        //strstr devuelve NULL si no encuentra la cadena
+        if (strstr(Aux->T.Descripcion, descripcion) != NULL){
+            free(descripcion);
+            return Aux;
+        }
+        //aux ira hasta el siguiente elemento del auxiliar
+        Aux = Aux->Siguiente;
+    }
+    free(descripcion);
+    return Aux;
+}
+
+void liberarMemoriaDeLista(Nodo ** Start){
+    Nodo * Aux = *Start;
+    Nodo * siguiente;
+    while (Aux != NULL)//va a iterar mientras el nodo
+    {
+        siguiente = Aux->Siguiente;//guardamos la direccion del siguiente nodo antes de borrar el actual.
+        //liberamos la memoria de la descripcion un char
+        if (Aux->T.Descripcion != NULL)
+            free(Aux->T.Descripcion);
+        //ahora liberamos la memoria de la estructura nodo
+        free(Aux);
+        //avanzamos al siguiente
+        Aux = siguiente;
+    }
+    *Start = NULL;
 }
