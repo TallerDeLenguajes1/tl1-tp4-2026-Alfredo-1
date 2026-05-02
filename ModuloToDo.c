@@ -88,6 +88,10 @@ int main()
 
     } while (condicion == 1);//dejara de iterar cuando condicion = 1
     
+    printf("\n\n---------------Las tareas a realizar son------------");
+    mostrarLista(start);
+    printf("\n\n---------------Las tareas realizadas son------------");
+    mostrarLista(start2);
     return 0;
 }
 
