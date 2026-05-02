@@ -19,6 +19,8 @@ Nodo * crearListaVacia();
 Nodo * crearNodo(Tarea nuevaTarea);
 Tarea cargarTarea(int id);
 void insertarNodo(Nodo ** Start, Nodo * nuevoNodo);
+Nodo * buscarNodo(Nodo ** Start, Tarea tarea);
+void mostrarLista(Nodo * Start);
 
 int main()
 {
@@ -51,17 +53,8 @@ int main()
             condicion = 0;
 
     } while (condicion == 1);
-    Nodo * Aux = start;
-    printf("\n\n---------------Las tareas son------------");
-    while (Aux)
-    {
-        printf("\n\ndescripcion de tarea: %s", Aux->T.Descripcion);
-        printf("\nduracion de tarea: %d horas", Aux->T.Duracion);
-        printf("\nID Tarea: %d", Aux->T.TareaID);
 
-        Aux = Aux->Siguiente;
-    }
-    
+    mostrarLista(start);
     
     return 0;
 }
@@ -84,6 +77,7 @@ Tarea cargarTarea(int id){
     printf("\n\ningrese 'descripcion' de tarea pendiente: ");
     fgets(buffer, sizeof(buffer), stdin);
     buffer[strcspn(buffer, "\n")]= '\0';
+    //reservo memoria para un char de la descripcion
     nuevaTarea.Descripcion = (char *) malloc((strlen(buffer)+1) * sizeof(char));
 
     if(nuevaTarea.Descripcion != NULL) {
@@ -111,4 +105,33 @@ void insertarNodo(Nodo ** Start, Nodo * nuevoNodo){
     nuevoNodo->Siguiente = *Start;
     //el puntero inicial ahora apunta al nuevoNodo
     *Start = nuevoNodo;
+}
+
+void mostrarLista(Nodo * Start){//no hace falta pasarle con doble puntero por que no se cambiara ningun dato
+    Nodo * Aux = Start;
+    printf("\n\n---------------Las tareas son------------");
+    while (Aux)//muestra hasta llegar a NULL
+    {
+        printf("\n\ndescripcion de tarea: %s", Aux->T.Descripcion);
+        printf("\nduracion de tarea: %d horas", Aux->T.Duracion);
+        printf("\nID Tarea: %d", Aux->T.TareaID);
+
+        Aux = Aux->Siguiente;
+    }
+}
+
+/*en esta funcion quiero que pida como parametro la direccion del puntero a Start y el numero id
+de la tarea que quiero transferir a la lista de tareas finalizadas
+cambiar Tarea por id que recibe como parametro
+usar ese id para comparar con cada nodo de la lista hasta encontrarlo
+si no lo encuentra tengo que ver que retornar*/
+Nodo * buscarNodo(Nodo ** Start, Tarea tarea){
+    Nodo * Aux = * Start;
+    //recorrera la lista hasta que aux llegue a null, o hasta que encuentre la tarea con el id buscado
+    while (Aux && Aux->T.TareaID != tarea.TareaID)
+    {
+        //aux ira hasta el siguiente elemento del auxiliar
+        Aux = Aux->Siguiente;
+    }
+    return Aux;
 }
